@@ -1,4 +1,5 @@
-﻿using Server.Model;
+﻿using Server.HackTestWPF;
+using Server.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,10 +20,10 @@ namespace Server.Controllers
 
         Room[] rooms = new Room[]
         {
-            new Room {Id = 1, Name = "Mon A", LocationId = 1},
-            new Room {Id = 2,  Name = "Mon B", LocationId = 1 },
-            new Room {Id = 3,  Name = "Mon C (No lifesize)", LocationId = 1},
-            new Room {Id = 4,  Name = "Mon D (No lifesize)", LocationId = 1}
+            new Room {Id = "1", Name = "Mon A", Location = "1"},
+            new Room {Id = "2",  Name = "Mon B", Location = "1" },
+            new Room {Id = "3",  Name = "Mon C (No lifesize)", Location = "1"},
+            new Room {Id = "4",  Name = "Mon D (No lifesize)", Location = "1"}
         };
 
         /*
@@ -38,11 +39,20 @@ namespace Server.Controllers
         [HttpPost]
         public IHttpActionResult BookRoom(BookRoomParam param)
         {
+            var service = new HackExchangeService();
+            HackExchangeContext context = new HackExchangeContext()
+            {
+                Credentials = new NetworkCredential("reportplususer@infragistics.com", "%baG7cadence"),
+                Endpoint = "https://outlook.office365.com/EWS/Exchange.asmx"
+            };
+            var rooms = service.GetRooms(context).Where(r => r.Location == "Montevideo, Uruguay" || r.Location == "Montevideo");
+            RoomAvailability availability = service.GetRoomAvailability(context, "MON-A@infragistics.com", null, 60, true);
+
             // If there is room available
-            var bookResult = new BookResult() { Booked = true, Room = rooms[0], Start = DateTime.Now, End = DateTime.Now.AddMinutes(param.Time)};
+            var bookResult = new BookResult() { Booked = true, Room = rooms.First(), Start = DateTime.Now, End = DateTime.Now.AddMinutes(param.Time)};
 
             // If there is not, then it will find a possible slot.
-            var negativeResult = new BookResult() { Booked = false, Room = rooms[0], Start = DateTime.Now.AddMinutes(10), End = DateTime.Now.AddMinutes(param.Time) };
+            var negativeResult = new BookResult() { Booked = false, Room = rooms.First(), Start = DateTime.Now.AddMinutes(10), End = DateTime.Now.AddMinutes(param.Time) };
 
             return Ok(negativeResult);
         }
@@ -56,9 +66,9 @@ namespace Server.Controllers
 
         [Route("api/exchange/getrooms/{locationId}")]
         [HttpGet]
-        public IEnumerable<Room> GetRoomsForLocation(int locationId)
+        public IEnumerable<Room> GetRoomsForLocation(string locationId)
         {
-            return rooms.Where(r => r.LocationId == locationId);
+            return rooms.Where(r => r.Location == locationId);
         }
         
         [Route("api/exchange/getlocations")]
@@ -81,6 +91,8 @@ namespace Server.Controllers
         public bool LifeSize { get; set; }
 
         public int Time { get; set; }
+
+        public string Location { get; set; }
     }
 
     public class LoginResult

@@ -135,8 +135,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="HackTestWPF\Xmls\MailboxDataTemplate.xml" />
     <Content Include="Index.html" />
     <Content Include="Web.config" />
+    <EmbeddedResource Include="HackTestWPF\Xmls\GetRoomAvailability.xml" />
+    <EmbeddedResource Include="HackTestWPF\Xmls\GetRooms.xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -144,6 +147,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="HackTestWPF\BusyTimeWindow.cs" />
+    <Compile Include="HackTestWPF\HackExchangeService.cs" />
+    <Compile Include="HackTestWPF\RoomAvailability.cs" />
     <Compile Include="Model\Location.cs" />
     <Compile Include="Model\Room.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
